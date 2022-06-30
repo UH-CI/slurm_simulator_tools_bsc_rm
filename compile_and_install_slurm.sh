@@ -23,6 +23,7 @@ export CFLAGS="-D SLURM_SIMULATOR -g0 -O3 -D NDEBUG=1 -fno-omit-frame-pointer -f
 cd "${slurm_source_dir}"
 
 echo "Running Configure"
+export LDFLAGS="-lm"
 
 ./configure --exec-prefix=$install_dir/slurm_programs \
 --localstatedir=$install_dir/slurm_varios \
