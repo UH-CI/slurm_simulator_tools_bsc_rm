@@ -7,7 +7,7 @@ slurm_source_dir="${work_dir}/slurm_simulator"
 slurm_branch="bsc_simulator_v19"
 if [ ! -d "$slurm_source_dir" ]; then
     echo "Downloading Slurm code from Github"
-    git clone https://github.com/BSC-RM/slurm_simulator.git
+    git clone https://github.com/UH-CI/slurm_simulator_bsc_rm.git
     echo "Switching Slurm into tag $slurm_branch"
     cd $slurm_source_dir
     git checkout "${slurm_branch}"
