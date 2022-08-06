@@ -6,10 +6,10 @@ SlurmUser=TOKEN_USER
 SlurmdUser=TOKEN_USER
 ControlMachine=TOKEN_CONTROL_MACHINE #ubuntu
 ControlAddr=TOKEN_CONTROL_MACHINE #ubuntu
-SlurmctldTimeout=65533
-SlurmdTimeout=65533
+SlurmctldTimeout=60
+SlurmdTimeout=120
 MessageTimeout=60
-ReturnToService=1
+ReturnToService=2
 
 #SlurmctldPort=68256
 #SlurmdPort=6827
@@ -24,17 +24,16 @@ JobCredentialPublicCertificate=TOKEN_SLURM_USER_PATH/slurm_conf/slurm.cert
 PluginDir=TOKEN_SLURM_USER_PATH/slurm_programs/lib/slurm
 TaskPlugin=task/none
 PropagatePrioProcess=0
-PropagateResourceLimitsExcept=CPU
-###PropagateResourceLimitsExcept=None
+#PropagateResourceLimitsExcept=CPU
 ProctrackType=proctrack/linuxproc
-KillWait=60
-WaitTime=120
+KillWait=120
+WaitTime=0
 ###MaxJobCount=8000
-MaxJobCount=20000
-#MinJobAge=300
-MinJobAge=3000
-OverTimeLimit=1
-InactiveLimit=1800
+MaxJobCount=300000
+MinJobAge=300
+#MinJobAge=3000
+OverTimeLimit=2
+InactiveLimit=300
 
 JobAcctGatherType=jobacct_gather/linux
 JobAcctGatherFrequency=30
@@ -60,30 +59,32 @@ SwitchType=switch/none
 MpiDefault=none
 ###FirstJobId=1000
 SchedulerType=sched/backfill
-SchedulerParameters=bf_interval=23,bf_queue_limit=TOKEN_BF_QUEUE
+SchedulerParameters=bf_resolution=300,bf_queue_limit=1000,bf_window=43200,bf_interval=120,bf_max_job_test=10000,bf_continue,nohold_on_prolog_fail,defer 
 #SchedulerParameters=bf_interval=30,max_job_bf=50
-###PriorityDecayHalfLife=7-0
-PriorityDecayHalfLife=14-00:00:00
-###SelectType=select/cons_res
-SelectType=select/linear # As close as this simulator env can get to being select/alps
-###SelectTypeParameters=CR_CPU
+PriorityDecayHalfLife=7-0
+#PriorityDecayHalfLife=14-00:00:00
+SelectType=select/cons_res
+#SelectType=select/linear # As close as this simulator env can get to being select/alps
+SelectTypeParameters=CR_Core_Memory
 
 PriorityType=priority/multifactor
-PriorityFavorSmall=YES
-PriorityWeightAge=1000
-PriorityWeightFairshare=10000
+PriorityFlags=FAIR_TREE,
+#PriorityFavorSmall=YES
+#PriorityWeightAge=1000
 PriorityWeightJobSize=1000
-PriorityWeightPartition=1000
-PriorityWeightQOS=0
-#PriorityWeightAge=50000000 ###100
-#PriorityWeightFairShare=0
+PriorityWeightPartition=100000000
+PriorityWeightQOS=1
+PriorityWeightAge=50000000 ###100
+PriorityWeightFairShare=1000000000
+PriorityMaxAge=30-0
 #PriorityWeightQOS=0 ###1000000000
 #PriorityWeightPartition=0 ###0
 #PriorityWeightJobSize=600000000 ###0
-#AccountingStorageType=accounting_storage/filetxt
 #AccountingStorageLoc=TOKEN_SLURM_USER_PATH/slurm_varios/job_accounting
 #AccountingStorageType=accounting_storage/slurmdbd
 #AccountingStorageHost=localhost
+#AccountingStorageEnforce=associations,limits,qos
+#AccountingStorageTRES=fs/disk,Pages,VMem,gres/gpu
 ###AccountingStorageEnforce=limits,qos
 ################################################################################################################AccountingStorageEnforce=limits
 ClusterName=perfdevel_mall
@@ -104,20 +105,73 @@ SlurmdPidFile=TOKEN_SLURM_USER_PATH/slurm_varios/slurmd.pid
 #PriorityUsageResetPeriod=QUARTERLY    # CSCS policy
 #PriorityFlags=SMALL_RELATIVE_TO_TIME
 
-
-
 #DefMemPerNode=32768
 #MaxMemPerNode=32768
 
+#FastSchedule=2
+
+# # COMPUTE NODES
+# ########################################
+# ########################################
+ #NodeName=node-[0001-0003,0005-0178]           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=128500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,ivy-bridge,ib_qdr
+ NodeName=node-[0053]           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=100500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,ivy-bridge,ib_qdr
+ NodeName=node-[0001-0052,0054-0178]           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=128500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,ivy-bridge,ib_qdr
+ NodeName=node-[0179-0187,0189-0230,0269-0278] Sockets=2 CoresPerSocket=12 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=128500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,haswell,ib_qdr
+ NodeName=node-[0188] Sockets=2 CoresPerSocket=12 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=100500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,haswell,ib_qdr
+ NodeName=node-[0261]           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=225000 MemSpecLimit=2048 Weight=100                            Features=x86,intel,haswell,ib_qdr
+ NodeName=node-[0231-0260,0262-0263]           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=257500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,haswell,ib_qdr
+ NodeName=node-[0264-0268]           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=128500 MemSpecLimit=2048 Weight=100                            Features=x86,intel,broadwell,ib_qdr
+
+ ########################################
+ ########################################
+ NodeName=lmem-[0002]                          Sockets=4 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=967000  MemSpecLimit=2048 Weight=5000                          Features=x86,intel,ivy-bridge,ib_qdr
+ NodeName=lmem-[0001,0003-0006]                Sockets=4 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=1031000 MemSpecLimit=2048 Weight=5000                          Features=x86,intel,ivy-bridge,ib_qdr
+ NodeName=lmem-[0007-0009]                     Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=1031000 MemSpecLimit=2048 Weight=5000                          Features=x86,intel,haswell,ib_qdr
+ NodeName=lmem-[0010]                          Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=819200  MemSpecLimit=2048 Weight=5000                          Features=x86,intel,haswell,ib_qdr
+ ########################################
+ ########################################
+ NodeName=gpu-[0001-0002]                      Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=128500 MemSpecLimit=2048 Gres=gpu:NV-K40:2        Weight=10000   Features=x86,intel,haswell,gpu,nvidia,kepler,tesla,ib_qdr
+ NodeName=gpu-[0003]                           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=95000  MemSpecLimit=2048 Gres=gpu:NV-RTX2080Ti:4  Weight=10000   Features=x86,intel,skylake,gpu,nvidia,turing,geforce,eth,eth_25
+ NodeName=gpu-[0004-0005,0007-0008]            Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=95000  MemSpecLimit=2048 Gres=gpu:NV-RTX2080Ti:8  Weight=10000   Features=x86,intel,skylake,gpu,nvidia,turing,geforce,eth,eth_25
+ NodeName=gpu-[0006]                           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=95000  MemSpecLimit=2048 Gres=gpu:NV-RTX2080Ti:8  Weight=10000   Features=x86,intel,skylake,gpu,nvidia,turing,geforce,eth,eth_25
+ NodeName=gpu-[0009]                           Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=95000  MemSpecLimit=2048 Gres=gpu:NV-RTX2070:8    Weight=10000   Features=x86,intel,skylake,gpu,nvidia,turing,geforce,eth,eth_25
+ NodeName=gpu-[0010]                           Sockets=2 CoresPerSocket=20 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=515800 MemSpecLimit=2048 Gres=gpu:NV-V100-SXM2:8  Weight=10000   Features=x86,intel,broadwell,gpu,nvidia,tesla,volta,eth,eth_100,eth_25
+NodeName=compressor-[01-02] Sockets=1 CoresPerSocket=10 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=7000 MemSpecLimit=2048                   Features=x86,intel,skylake
+
+ ## Intel -ADS nodes
+ NodeName=node-[0327-0333]           Sockets=2 CoresPerSocket=24 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=257000 MemSpecLimit=2048 Weight=100                            Features=x86,intel,ice_lake,ib_hdr,ib_hdr100,eth,eth_25
+
+ ## START -- Dell nodes
+ NodeName=node-[0307-0323]           Sockets=2 CoresPerSocket=24 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=192000 MemSpecLimit=2048 Weight=100                            Features=x86,intel,cascade_lake,ib_hdr,ib_hdr100,eth,eth_25
+
+ ## START -- HPE nodes 20200919 ##
+ NodeName=node-[0279-0306]           Sockets=2 CoresPerSocket=20 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=193000 MemSpecLimit=2048 Weight=100                            Features=x86,intel,cascade_lake,ib_hdr,ib_hdr100,eth,eth_25
+ NodeName=gpu-[0011-0013]           Sockets=2 CoresPerSocket=24 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=193000 MemSpecLimit=2048  Gres=gpu:NV-V100-SXM2:8 Weight=10000                            Features=x86,intel,cascade_lake,eth,eth_25,gpu,nvidia,tesla,volta
+ NodeName=gpu-[0014-0017]           Sockets=2 CoresPerSocket=24 ThreadsPerCore=1 CoreSpecCount=1 RealMemory=192000 MemSpecLimit=2048  Gres=gpu:NV-RTX5000:8 Weight=10000       Features=x86,intel,cascade_lake,eth,eth_25,gpu,nvidia,quadro,turing
 
 
-FastSchedule=2
+#Mana Public setup
+PartitionName=gpu         Nodes=gpu-[0011-0017]  DefaultTime=00-00:01:00  MaxTime=259200  OverSubscribe=NO  PriorityJobFactor=1000 PriorityTier=100  PreemptMode=OFF      MaxNodes=1  QOS=normal.part  Default=YES DefMemPerNode=512
 
-# Original
+PartitionName=gpu-sandbox           Nodes=gpu-0001    DefaultTime=00-00:01:00  MaxTime=14400  OverSubscribe=NO PriorityJobFactor=1000   PriorityTier=100  PreemptMode=OFF      MaxNodes=2   QOS=sb_limit DefMemPerNode=512
+
+PartitionName=shared         Nodes=node-[0029-0033,0036-0051,0053-0178],lmem-[0001-0005],node-0[279-302,306,332]  DefaultTime=00-00:01:00  MaxTime=259200  OverSubscribe=NO  PriorityJobFactor=1000 PriorityTier=100  PreemptMode=OFF      MaxNodes=1  QOS=normal.part  Default=YES DefMemPerNode=512
+
+PartitionName=shared-long    Nodes=node-[0029-0033,0036-0051,0053-0178],lmem-[0001-0005],node-0[279-302,306,332]  DefaultTime=00-00:01:00  MaxTime=604800  OverSubscribe=NO  PriorityJobFactor=1000 PriorityTier=100   PreemptMode=OFF  MaxNodes=1     QOS=long_run DefMemPerNode=512
+
+PartitionName=exclusive         Nodes=node-[0029-0033,0036-0051,0053-178],lmem-[0001-0005],node-0[279-302,306,332]  DefaultTime=00-00:01:00  MaxTime=259200  OverSubscribe=exclusive PriorityJobFactor=1000  PriorityTier=100  PreemptMode=OFF      MaxNodes=20    QOS=normal.part DefMemPerNode=0
+
+PartitionName=exclusive-long    Nodes=node-[0029-0033,0036-0051,0053-0178],lmem-[0001-0005],node-0[279-302,306,332] DefaultTime=00-00:01:00  MaxTime=604800  OverSubscribe=exclusive  PriorityJobFactor=1000 PriorityTier=100   PreemptMode=OFF      MaxNodes=20   QOS=long_run DefMemPerNode=0
+
+PartitionName=sandbox           Nodes=node-[0001-0003,0005]   DefaultTime=00-00:01:00  MaxTime=345600 OverSubscribe=NO PriorityJobFactor=1000   PriorityTier=100  PreemptMode=OFF      MaxNodes=2  QOS=sb_limit DefMemPerNode=512
+
+############################
+#### Original Template setup
+############################
 #NodeName=nid0[0008-0063,0072-0127,0136-0191,0200-0255,0264-0323,0328-0383,0388-0451,0456-0511,0516-0579,0584-0767,0772-0835,0840-0895,0900-0963,0968-1151,1156-1219,1224-1279,1284-1535,1540-1603,1608-1663,1668-1919,1924-1987,1992-2047,2052-2303,2308-2371,2376-2431,2436-2687,2692-2755,2760-2815,2820-3071,3076-3139,3144-3455,3460-3523,3528-3839,3844-3907,3912-4223,4228-4291,4296-4607,4992-5443,5448-5759,5764-5827,5832-5951,5956-6143] Sockets=2 CoresPerSocket=12 ThreadsPerCore=1 RealMemory=64523 TmpDisk=32258 
 
 #PartitionName=normal Nodes=nid0[0008-0063,0072-0127,0136-0191,0200-0255,0264-0323,0328-0383,0388-0451,0456-0511,0516-0579,0584-0767,0772-0835,0840-0895,0900-0963,0968-1151,1156-1219,1224-1279,1284-1535,1540-1603,1608-1663,1668-1919,1924-1987,1992-2047,2052-2303,2308-2371,2376-2431,2436-2687,2692-2755,2760-2815,2820-3071,3076-3139,3144-3455,3460-3523,3528-3839,3844-3907,3912-4223,4228-4291,4296-4607,4992-5443,5448-5759,5764-5827,5832-5951,5956-6143] Default=YES State=UP Shared=EXCLUSIVE DefMemPerNode=64000
 
-NodeName=n[1-TOKEN_NNODES] Sockets=2 CoresPerSocket=TOKEN_CORES ThreadsPerCore=1
-PartitionName=normal Nodes=n[1-TOKEN_NNODES] Default=YES MaxTime=INFINITE State=UP Shared=NO
+#NodeName=n[1-TOKEN_NNODES] Sockets=2 CoresPerSocket=TOKEN_CORES ThreadsPerCore=1
+#PartitionName=normal Nodes=n[1-TOKEN_NNODES] Default=YES MaxTime=INFINITE State=UP Shared=NO
 
